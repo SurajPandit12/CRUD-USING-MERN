@@ -1,12 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Users() {
-  return (
-    <div
-   className="d-flex vh-100 bg-primary justify-content-center align-items-center">Users
-   <div  className="w-50 bg-white rounded p-3">
+  const [users, setUsers] = useState([
+    {
+      Name: 'Suraj',
+      Age: 22,
+      Email: 'suraejpandit@gmail.com',
+    },
+  ]);
 
-   <table className="table">
+  return (
+    <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
+      <div className="w-50 bg-white rounded p-3">
+        {/* Correct usage of Link */}
+        <Link to="/create" className="btn btn-success mb-3">
+          Create New
+        </Link>
+        <table className="table">
           <thead>
             <tr>
               <th>Name</th>
@@ -15,16 +26,23 @@ function Users() {
               <th>Action</th>
             </tr>
           </thead>
-        
-            <tbody></tbody>
-            </table>
-
-   </div>
-   
-   
-   
-   </div>
-  )
+          <tbody>
+            {users.map((user, index) => (
+              <tr key={index}>
+                <td>{user.Name}</td>
+                <td>{user.Email}</td>
+                <td>{user.Age}</td>
+                <td>
+                  <button className="btn btn-primary btn-sm">Edit</button>
+                  <button className="btn btn-danger btn-sm">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
-export default Users
+export default Users;
