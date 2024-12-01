@@ -1,38 +1,50 @@
-import axios from 'axios';
-import React, { useState } from 'react';
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function CreateUser() {
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [age, setAge] = useState();
+function CreateUser({ addUser }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const navigate = useNavigate();
 
-  let Submit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!name || !email || !age) {
-      console.log("Please fill all fields.");
+      alert("Please fill all fields.");
       return;
     }
-  
+
     const ageNumber = Number(age);
     if (isNaN(ageNumber)) {
-      console.log("Age must be a valid number.");
+      alert("Age must be a valid number.");
       return;
     }
-  
+
+    // Backup state for rollback
+    const rollbackUsers = JSON.parse(localStorage.getItem("users")) || [];
+
     axios
       .post("https://62a59821b9b74f766a3c09a4.mockapi.io/crud", { name, email, age: ageNumber })
       .then((result) => {
         console.log("User created successfully:", result.data);
-        // You can now use the created user's data here, for example:
+        addUser(result.data); // Add user to the parent state
+        localStorage.setItem("users", JSON.stringify([...rollbackUsers, result.data]));
         alert(`User created: ${result.data.name}`);
+        navigate("/"); // Navigate back to users list
       })
-      .catch((err) => console.log(err.response.data));
+      .catch((err) => {
+        console.log(err);
+        alert("An error occurred. Rolling back to previous state.");
+        addUser(rollbackUsers); // Restore previous state
+      });
   };
 
   return (
     <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
       <div className="w-50 bg-white rounded p-3">
-        <form onSubmit={Submit}>
+        <form onSubmit={handleSubmit}>
           <h2>Add User</h2>
           <div className="mb-2">
             <label htmlFor="name">Name</label>
